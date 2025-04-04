@@ -1,2 +1,2 @@
 pyautogui
-nfcpy
+pyscard # The Smartcard Reader from Trust dosen't support libusb. Using pyscard which support PC/SC

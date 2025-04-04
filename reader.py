@@ -29,7 +29,7 @@ def wait_and_read_uid(reader):
         else:
             print("Failed to read UID.")
             return []
-    except Exception as e:
+    except Exception as e: # Joaquín, puse un manejo de excepciones muy basico para que no me diera porculo, tranquilo que no meto todo dentro de una excepción así como asi :D
         return []
 
 def formated_uid(unformatted_uid):
