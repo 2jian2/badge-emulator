@@ -11,8 +11,7 @@ def select_reader():
     return reader
 
 def wait_and_read_uid(reader):
-
-
+    """Waits for an NFC card and returns its UID as a list of hex strings."""
     uid_in_array = []
 
     def on_connect(tag):
@@ -26,7 +25,7 @@ def wait_and_read_uid(reader):
     return uid_in_array
 
 def formated_uid(unformatted_uid):
-
+    """Formats a UID list into a colon-separated string with two-digit hex values."""
     formated = []
 
     for hex in unformatted_uid:
