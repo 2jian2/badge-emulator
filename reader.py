@@ -17,7 +17,6 @@ def wait_and_read_uid(reader):
 
     def on_connect(tag):
         for byte in tag.identifier:
-            hex_value = hex(byte)[2:].upper() # convert each byte to a 2-digit uppercase hex string without '0x'
             hex_value = f"{byte:02X}"
             uid_in_array.append(hex_value)
         return False
@@ -25,3 +24,16 @@ def wait_and_read_uid(reader):
     reader.connect(rdwr={'on-connect': on_connect})
 
     return uid_in_array
+
+def formated_uid(unformatted_uid):
+
+    formated = []
+
+    for hex in unformatted_uid:
+        if len(hex) == 1:
+            formated.append("0" + hex)
+        else:
+            formated.append(hex)
+
+    return ":".join(formated)
+
