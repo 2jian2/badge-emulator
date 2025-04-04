@@ -11,23 +11,25 @@ def select_reader():
         exit()
     else:
         nfc_reader = reader[0].createConnection()
-        nfc_reader.connect()
         return nfc_reader
 
 
 def wait_and_read_uid(reader):
     """Sends APDU command to retrieve the UID from the NFC card."""
+    try:
+        reader.connect()
 
-    print("Waiting for a NFC card...")
-    response, sw1, sw2 = reader.transmit(GET_UID_COMMAND)
+        response, sw1, sw2 = reader.transmit(GET_UID_COMMAND)
 
-    # Check if the status words indicate a successful response (0x90 means successful operation) (0x00 means without errors)
-    if [sw1, sw2] == [0x90, 0x00]:
-        uid_array = [f"{byte:02X}" for byte in response]
-        return uid_array
+        # Check if the status words indicate a successful response (0x90 means successful operation) (0x00 means without errors)
+        if [sw1, sw2] == [0x90, 0x00]:
+            uid_array = [f"{byte:02X}" for byte in response]
+            return uid_array
 
-    else:
-        print("Failed to read UID.")
+        else:
+            print("Failed to read UID.")
+            return []
+    except Exception as e:
         return []
 
 def formated_uid(unformatted_uid):
