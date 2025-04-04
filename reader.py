@@ -1,38 +1,36 @@
-import nfc
+from smartcard.System import readers
+GET_UID_COMMAND = [0xFF, 0xCA, 0x00, 0x00, 0x00]
+
 
 def select_reader():
-    """This function return a NFC reader if it's connected."""
-    reader = nfc.ContactlessFrontend("usb")
+    """Returns an NFC reader if it's connected via USB."""
+    reader = readers()
 
-    if reader is None:
+    if len(reader) == 0:
         print("No NFC reader detected through USB port.")
         exit()
+    else:
+        nfc_reader = reader[0].createConnection()
+        nfc_reader.connect()
+        return nfc_reader
 
-    return reader
 
 def wait_and_read_uid(reader):
-    """Waits for an NFC card and returns its UID as a list of hex strings."""
-    uid_in_array = []
+    """Sends APDU command to retrieve the UID from the NFC card."""
 
-    def on_connect(tag):
-        for byte in tag.identifier:
-            hex_value = f"{byte:02X}"
-            uid_in_array.append(hex_value)
-        return False
+    print("Waiting for a NFC card...")
+    response, sw1, sw2 = reader.transmit(GET_UID_COMMAND)
 
-    reader.connect(rdwr={'on-connect': on_connect})
+    # Check if the status words indicate a successful response (0x90 means successful operation) (0x00 means without errors)
+    if [sw1, sw2] == [0x90, 0x00]:
+        uid_array = [f"{byte:02X}" for byte in response]
+        return uid_array
 
-    return uid_in_array
+    else:
+        print("Failed to read UID.")
+        return []
 
 def formated_uid(unformatted_uid):
     """Formats a UID list into a colon-separated string with two-digit hex values."""
-    formated = []
-
-    for hex in unformatted_uid:
-        if len(hex) == 1:
-            formated.append("0" + hex)
-        else:
-            formated.append(hex)
-
-    return ":".join(formated)
+    return ":".join(unformatted_uid)
 
