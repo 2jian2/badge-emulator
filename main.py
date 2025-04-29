@@ -1,21 +1,31 @@
 import pyautogui
 import time
-from reader import select_reader, wait_and_read_uid, formated_uid
+from lib.smart_card_reader import SmartCardReader
+from lib.keyboard_writer import KeyboardWriter
 
-reader = select_reader()
+reader = SmartCardReader()
+keyboard = KeyboardWriter()
 
 def main():
+
+    nfc_reader = None
+
+    while not nfc_reader:
+        print("Looking for a NFC reader...")
+        nfc_reader = reader.select_reader()
+        if not nfc_reader:
+            time.sleep(5)
+
 
     print("Badge emulator running. Waiting for cards...")
 
     while True:
-        uid_array = wait_and_read_uid(reader)
+        uid = reader.read_uid()
 
-        if uid_array:
-            uid_string = formated_uid(uid_array)
-            pyautogui.write(uid_string)
-            pyautogui.press("enter")
-            print(f"UID detected and typed: {uid_string}")
+        if uid:
+            keyboard.write_uid(uid)
+            keyboard.press_enter()
+            print(f"UID detected and typed: {uid}")
             time.sleep(5)
 
         time.sleep(0.2)
